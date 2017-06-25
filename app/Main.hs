@@ -124,7 +124,7 @@ k4 = SKM.KeyContents
   , SKM.trialActivation = False
   , SKM.maxnoofmachines = 0
   , SKM.allowedMachines = []
-  , SKM.dataObjects = []
+  , SKM.dataObjects = [DataObject 657 "te st" 123 "test test"]
   , SKM.signDate = 0
   }
 
@@ -152,7 +152,7 @@ k5 = SKM.KeyContents
   , SKM.trialActivation = False
   , SKM.maxnoofmachines = 0
   , SKM.allowedMachines = []
-  , SKM.dataObjects = []
+  , SKM.dataObjects = [DataObject 658 "o1" 0 "object", DataObject 659 "o2" 1 ""]
   , SKM.signDate = 0
   }
 

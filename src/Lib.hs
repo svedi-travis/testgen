@@ -27,9 +27,11 @@ data Key = KeyContents
   , trialActivation :: Bool
   , maxnoofmachines :: Integer
   , allowedMachines :: [String]
-  , dataObjects :: [String]
+  , dataObjects :: [DataObject]
   , signDate :: Integer
   }
+
+data DataObject = DataObject Integer String Integer String
 
 data Field =
     ProductId
@@ -171,16 +173,32 @@ optional testName with_field without_field field expected = concat
   , "  ASSERT_TRUE(license_key_1.has_value()) << \"Failed to construct LicenseKey object\";\n"
   , "  ASSERT_TRUE(license_key_2.has_value()) << \"Failed to construct LicenseKey object\";\n"
   , "\n"
-  , "  EXPECT_TRUE(license_key_1->" ++ accessor field ++ ".has_value());\n"
-  , "  EXPECT_FALSE(license_key_2->" ++ accessor field ++ ".has_value());\n"
+  , optional_specific field expected
   , "}\n"
   ]
 
-generateTest :: String -> Key -> String
-generateTest testName expected =
-    mandatory testName "license goes here!" expected
- ++ features testName "liceens goes here!" expected
- ++ (flip concatMap) optionalFields (\field ->
-         optional testName "license with field here!" "license without field here!" field expected
-      ++ "\n"
-    )
+optional_specific DataObjects expected = concat
+int object_count = 0;
+(flip concatMap) (zip [0..] $ dataObjects expected)
+                 (\(i, _) -> "bool seen_" ++ (show i) ++ " = false;\n")
+
+for (size_t i = 0; i < license_key_1.size(); ++i) {
+  DataObject const& o = *license_key_1.get_data_objects();
+  for dataObjects expected (\object ->
+    if ( o.id == object_id && o.name == object_name
+      && o.ind_value == object_int_value && o.string_value == object_string_value)
+    {
+      if (!seen_i) { ++object_count; }
+      seen_i = true;
+    }
+  )
+}
+
+EXPECT_EQ(object_count, length dataObjects expected);
+EXPECT_EQ(license_key_2->get_data_objects()->size(), 0);
+
+
+optional_specific _           expected = concat
+  [ "  EXPECT_TRUE(license_key_1->" ++ accessor field ++ ".has_value());\n"
+--  , "  EXPECT_FALSE(license_key_2->" ++ accessor field ++ ".has_value());\n"
+  ]
